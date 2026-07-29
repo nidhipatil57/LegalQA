@@ -1,0 +1,52 @@
+{
+  "name": "legalqa",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "db:start": "node scripts/db-control.js start",
+    "db:stop": "node scripts/db-control.js stop",
+    "dev": "node scripts/db-control.js start && next dev",
+    "build": "npx prisma generate && next build",
+    "start": "node scripts/db-control.js start && next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.9.1",
+    "@prisma/client": "^7.9.1",
+    "@tanstack/react-query": "^5.101.4",
+    "@tanstack/react-table": "^8.21.3",
+    "@xenova/transformers": "^2.17.2",
+    "adm-zip": "^0.6.0",
+    "bcryptjs": "^3.0.3",
+    "framer-motion": "^12.43.0",
+    "groq-sdk": "^1.4.1",
+    "jsonwebtoken": "^9.0.3",
+    "lucide-react": "^1.27.0",
+    "next": "16.2.12",
+    "pdf-parse": "^2.4.5",
+    "pdfjs-dist": "^6.2.108",
+    "pg": "^8.22.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-hook-form": "^7.83.0",
+    "recharts": "^3.10.1",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/adm-zip": "^0.5.8",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^20",
+    "@types/pdf-parse": "^1.1.5",
+    "@types/pg": "^8.20.0",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.12",
+    "prisma": "^7.9.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

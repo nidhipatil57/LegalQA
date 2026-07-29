@@ -1,157 +1,36 @@
-# ⚖️ LegalQA
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-> **AI-Powered Legal Intelligence Platform**
+## Getting Started
 
-Review Contracts • Detect Risks • Chat with Documents • Compare Clauses
-
----
-
-## 📖 Overview
-
-LegalQA is an AI-powered legal intelligence platform that helps legal professionals review contracts faster through intelligent risk detection, semantic search, Retrieval-Augmented Generation (RAG), and conversational AI.
-
-Instead of spending hours manually reviewing contracts, users can upload legal documents and instantly receive AI-powered insights, clause explanations, comparisons, and recommendations.
-
----
-
-## ✨ Features
-
-- 📄 Smart PDF & DOCX Upload
-- 🧠 AI Contract Analysis
-- ⚠️ Intelligent Risk Detection
-- 💬 Chat with Contracts
-- 🔍 Clause Comparison
-- 📚 Legal Knowledge Base
-- 📊 Analytics Dashboard
-- 🤝 Team Collaboration
-- 🔐 Enterprise Authentication
-- 📈 Multi-Tenant Architecture
-
----
-
-## 🛠 Tech Stack
-
-### Frontend
-
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- shadcn/ui
-
-### Backend
-
-- FastAPI
-- Python
-- SQLAlchemy
-
-### Database
-
-- PostgreSQL
-- Qdrant
-- Redis
-
-### AI
-
-- Retrieval-Augmented Generation (RAG)
-- Semantic Search
-- Vector Search
-
-### Cloud
-
-- AWS S3
-- Docker
-- Vercel
-- Railway
-
----
-
-## 🏗 Architecture
-
-```text
-            Next.js Frontend
-                   │
-               REST API
-                   │
-            FastAPI Backend
-          ┌────────┴────────┐
-          │                 │
-     PostgreSQL         Redis
-          │
-      Qdrant Vector DB
-          │
-   RAG & Semantic Search
-```
-
----
-
-## 📂 Project Structure
-
-```text
-LegalQA/
-├── frontend/
-├── backend/
-├── docs/
-├── docker/
-├── tests/
-└── README.md
-```
-
----
-
-## 🚀 Getting Started
-
-Clone the repository
-
-```bash
-git clone https://github.com/yourusername/LegalQA.git
-```
-
-Install dependencies
-
-```bash
-cd frontend
-npm install
-
-cd ../backend
-pip install -r requirements.txt
-```
-
-Run locally
+First, run the development server:
 
 ```bash
 npm run dev
-
-uvicorn app.main:app --reload
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
----
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## 🛣 Roadmap
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-- Authentication
-- Contract Upload
-- AI Risk Detection
-- RAG Pipeline
-- AI Chat
-- Clause Comparison
-- Analytics Dashboard
-- Enterprise Deployment
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
----
+## Learn More
 
-## 📄 License
+To learn more about Next.js, take a look at the following resources:
 
-This project is licensed under the MIT License.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
----
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-<div align="center">
+## Deploy on Vercel
 
-### ⚖️ LegalQA
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-**Building the Future of AI-Powered Legal Intelligence**
-
-⭐ Star the repository if you like this project!
-
-</div>
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

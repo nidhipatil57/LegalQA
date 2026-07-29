@@ -1,0 +1,312 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  PARTNER
+  SENIOR_LAWYER
+  ASSOCIATE
+  PARALEGAL
+  COMPLIANCE_OFFICER
+  VIEWER
+}
+
+enum Severity {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  REVIEW
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ContractStatus {
+  DRAFT
+  PENDING_REVIEW
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+model User {
+  id             String        @id @default(uuid())
+  email          String        @unique
+  password       String
+  name           String
+  role           Role          @default(VIEWER)
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  sessions       Session[]
+  apiKeys        ApiKey[]
+  tasks          Task[]        @relation("AssignedTasks")
+  comments       Comment[]
+  auditLogs      AuditLog[]
+  notifications  Notification[]
+  teamMembers    TeamMember[]
+  contracts      Contract[]
+  reports        Report[]
+}
+
+model Organization {
+  id                 String              @id @default(uuid())
+  name               String
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  users              User[]
+  teams              Team[]
+  contracts          Contract[]
+  knowledgeBaseItems KnowledgeBaseItem[]
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Team {
+  id             String       @id @default(uuid())
+  name           String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  members        TeamMember[]
+}
+
+model TeamMember {
+  id        String   @id @default(uuid())
+  teamId    String
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role     @default(VIEWER)
+  createdAt DateTime @default(now())
+
+  @@unique([teamId, userId])
+}
+
+model Contract {
+  id             String          @id @default(uuid())
+  title          String
+  status         ContractStatus  @default(PENDING_REVIEW)
+  version        Int             @default(1)
+  fileUrl        String
+  fileType       String          // "pdf" | "docx" | "txt"
+  riskScore      Int             @default(0) // 0 - 100
+  metadata       Json?           // Storing custom JSON attributes (Parties, Dates, etc.)
+  organizationId String
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  analysis       ContractAnalysis?
+  chunks         DocumentChunk[]
+  risks          Risk[]
+  clauses        Clause[]
+  conversations  Conversation[]
+  tasks          Task[]
+  reports        Report[]
+  comments       Comment[]
+}
+
+model ContractAnalysis {
+  id                 String   @id @default(uuid())
+  contractId         String   @unique
+  contract           Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  summary            String   @db.Text
+  parties            Json     // List of extracted parties
+  keyDates           Json     // Extracted termination date, renewal date, etc.
+  paymentTerms       String?  @db.Text
+  liability          String?  @db.Text
+  termination        String?  @db.Text
+  jurisdiction       String?  @db.Text
+  confidentiality    String?  @db.Text
+  forceMajeure       String?  @db.Text
+  intellectualProperty String? @db.Text
+  disputeResolution  String?  @db.Text
+  missingClauses     Json?    // Array of string missing clauses
+  complianceIssues   Json?    // Compliance errors
+  confidenceScore    Int      @default(90)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model DocumentChunk {
+  id         String   @id @default(uuid())
+  contractId String
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  index      Int
+  content    String   @db.Text
+  embedding  Float[]  // double precision[] in PG
+  createdAt  DateTime @default(now())
+
+  @@index([contractId])
+}
+
+model Risk {
+  id               String   @id @default(uuid())
+  contractId       String
+  contract         Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  severity         Severity @default(LOW)
+  description      String   @db.Text
+  clauseText       String   @db.Text
+  recommendation   String   @db.Text
+  suggestedRewrite String   @db.Text
+  industryStandard String?  @db.Text
+  createdAt        DateTime @default(now())
+
+  @@index([contractId])
+}
+
+model Clause {
+  id         String   @id @default(uuid())
+  contractId String
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  category   String   // "Termination", "Indemnification", etc.
+  text       String   @db.Text
+  summary    String   @db.Text
+  riskLevel  Severity @default(LOW)
+  createdAt  DateTime @default(now())
+
+  @@index([contractId])
+}
+
+model Conversation {
+  id         String    @id @default(uuid())
+  title      String
+  contractId String?
+  contract   Contract? @relation(fields: [contractId], references: [id], onDelete: SetNull)
+  userId     String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  messages   Message[]
+
+  @@index([userId])
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String       // "user" | "assistant"
+  content        String       @db.Text
+  citations      Json?        // List of chunks/pages referenced
+  createdAt      DateTime     @default(now())
+}
+
+model Task {
+  id           String       @id @default(uuid())
+  title        String
+  description  String?      @db.Text
+  status       TaskStatus   @default(TODO)
+  priority     TaskPriority @default(MEDIUM)
+  dueDate      DateTime?
+  contractId   String?
+  contract     Contract?    @relation(fields: [contractId], references: [id], onDelete: SetNull)
+  assignedToId String
+  assignedTo   User         @relation("AssignedTasks", fields: [assignedToId], references: [id], onDelete: Cascade)
+  checklist    Json?        // Array of checklist items { text: string, completed: boolean }
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([assignedToId])
+}
+
+model Report {
+  id          String   @id @default(uuid())
+  title       String
+  type        String   // "executive" | "risk" | "compliance" | "summary"
+  contractId  String
+  contract    Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  content     Json     // Report payload structure
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+model Comment {
+  id         String    @id @default(uuid())
+  contractId String
+  contract   Contract  @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  text       String    @db.Text
+  parentId   String?
+  parent     Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
+  replies    Comment[] @relation("CommentReplies")
+  createdAt  DateTime  @default(now())
+
+  @@index([contractId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  type      String   // "contract_ready" | "risk_found" | "task_assigned" | "comment_added" | "ai_finished"
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model KnowledgeBaseItem {
+  id             String       @id @default(uuid())
+  title          String
+  content        String       @db.Text
+  category       String
+  tags           String[]
+  embedding      Float[]      // double precision[] in PG
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  details   String   @db.Text
+  ipAddress String?
+  createdAt DateTime @default(now())
+}
+
+model ApiKey {
+  id             String       @id @default(uuid())
+  key            String       @unique
+  name           String
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId String
+  createdAt      DateTime     @default(now())
+}
