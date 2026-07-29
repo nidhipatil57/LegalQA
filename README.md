@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LegalQA: Legal Intelligence Operating System
+
+**LegalQA** is a premium, enterprise-grade AI-powered Legal Intelligence Operating System designed for law firms and compliance teams. It features sub-second contract audits, semantic vector chat, contract comparisons, and automated compliance risk assessments.
+
+---
+
+## Key Features
+
+- **Ingestion Pipeline**: Automated layout reconstruction for PDF/DOCX using LlamaParse Agentic Tier.
+- **Obligations Audit**: Extraction of payment terms, termination clauses, IP scope, and liability caps.
+- **Risk Assessment**: Color-coded risk scoring (Low, Medium, High) with suggested alternative clauses.
+- **Vector Chat**: Streamed response interface featuring semantic matching and page-level citations.
+- **Contract Comparison**: Side-by-side contract diffing and divergence metrics.
+- **Compliance Tasks**: Kanban board tracking risk remediation items and reviews.
+
+---
+
+## Directory Structure
+
+The project follows a standard, scalable layout:
+
+```
+LegalQA/
+├── docs/                # Architecture, API, Database, and Deployment guides
+├── prisma/              # Prisma schema definition
+├── public/              # Static fonts, icons, and assets
+├── scripts/             # Startup and database maintenance scripts
+├── src/                 # Main application source
+│   ├── app/             # Next.js App Router (pages and API endpoints)
+│   ├── components/      # UI components grouped by feature domain
+│   │   ├── ui/          # Generic reusable base controls
+│   │   ├── dashboard/   # Dashboard widgets
+│   │   └── contracts/   # Contract lists and review screens
+│   ├── features/        # Core business operations (auth, rag, risks)
+│   ├── lib/             # Third-party wrappers (Prisma client singleton, Groq)
+│   └── types/           # Domain typescript definitions
+├── uploads/             # Git-ignored local files uploads
+└── tests/               # Workspace automated tests
+```
+
+---
 
 ## Getting Started
 
-First, run the development server:
-
+### 1. Environment Variables Setup
+Copy the template and fill in your API credentials:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Sync the Database
+```bash
+npx prisma db push
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Run Development Server
+```bash
+npm run dev
+```
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Documentation Index
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+For detailed instructions and design details, see:
+* [Architecture Overview](file:///d:/Nidhi/LegalQA/LegalQA/docs/architecture.md)
+* [API References](file:///d:/Nidhi/LegalQA/LegalQA/docs/api.md)
+* [Database Configurations](file:///d:/Nidhi/LegalQA/LegalQA/docs/database.md)
+* [Deployment Guide](file:///d:/Nidhi/LegalQA/LegalQA/docs/deployment.md)
+* [Contributing Guidelines](file:///d:/Nidhi/LegalQA/LegalQA/docs/contributing.md)
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the [MIT License](file:///d:/Nidhi/LegalQA/LegalQA/LICENSE).
