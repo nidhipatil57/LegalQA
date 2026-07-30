@@ -6,13 +6,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, FileText, MessageSquare, AlertTriangle, GitCompare,
   BookOpen, BarChart3, Users, CheckSquare, Settings, Search, Bell,
-  Plus, LogOut, Command, ShieldCheck, User, X
+  Plus, LogOut, Command, ShieldCheck, User, X, ChevronDown, Sparkles
 } from 'lucide-react';
-
-interface Member {
-  name: string;
-  role: string;
-}
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -39,7 +34,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
         return res.json();
       })
-      .then((data) => setUser(data.user))
+      .then((data) => {
+        setUser(data.user);
+        // Simulate a system notification based on pending reviews
+        if (data.user?.organization) {
+          setNotifications([
+            { id: 1, text: "AI Analysis complete for Shuttle Contract", time: "5m ago" },
+            { id: 2, text: `${data.user.role} workspace initialized successfully`, time: "10m ago" }
+          ]);
+        }
+      })
       .catch(() => {});
 
     // Listen for Ctrl+K
@@ -107,22 +111,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   ];
 
   return (
-    <div className="min-h-screen bg-[#030712] text-gray-100 flex font-sans">
-      {/* Sidebar Panel */}
-      <aside className="w-64 glass-panel border-r border-white/5 flex flex-col justify-between shrink-0 p-4 select-none">
+    <div className="relative min-h-screen text-gray-100 flex font-sans p-4 gap-4 overflow-hidden h-screen bg-[#030712]">
+      {/* Background layer */}
+      <div className="os-background" />
+
+      {/* Sidebar Panel (Floating glass box) */}
+      <aside className="w-64 glass-panel rounded-2xl flex flex-col justify-between shrink-0 p-4 select-none">
         <div>
-          {/* Logo */}
+          {/* Logo / Org Selector */}
           <div className="flex items-center gap-3 px-2 py-3 border-b border-white/5 mb-6">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-400 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-blue-600 via-indigo-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-blue-500/20">
               <span className="font-display font-bold text-base text-white">L</span>
             </div>
             <div>
-              <span className="font-display font-bold text-sm tracking-tight text-white">Legal<span className="text-blue-400">QA</span></span>
-              <span className="block text-[8px] uppercase tracking-wider text-gray-400 -mt-1 font-semibold">Intelligence OS</span>
+              <span className="font-display font-bold text-sm tracking-tight text-white flex items-center gap-1.5">
+                LegalQA <Sparkles className="w-3 h-3 text-blue-400" />
+              </span>
+              <span className="block text-[8px] uppercase tracking-widest text-gray-400 -mt-1 font-bold">Intelligence OS</span>
             </div>
           </div>
 
-          {/* Navigation */}
+          {/* Navigation links list */}
           <nav className="space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -131,9 +140,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Link
                   key={item.name}
                   href={item.path}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold tracking-wide uppercase transition-all duration-300 ${
                     isActive
-                      ? 'bg-blue-600/10 text-blue-400 border border-blue-500/10'
+                      ? 'bg-blue-600/10 text-blue-400 border border-blue-500/15 shadow-[0_0_15px_rgba(59,130,246,0.1)]'
                       : 'text-gray-400 hover:text-white hover:bg-white/[0.02] border border-transparent'
                   }`}
                 >
@@ -145,17 +154,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </nav>
         </div>
 
-        {/* Profile Card */}
+        {/* Profile Card / Sign Out */}
         {user && (
           <div className="border-t border-white/5 pt-4">
-            <div className="flex items-center justify-between p-2 rounded-xl bg-white/[0.02] border border-white/5">
+            <div className="flex items-center justify-between p-2 rounded-xl bg-white/[0.01] border border-white/5 hover:border-white/10 transition-colors">
               <div className="flex items-center gap-2 overflow-hidden">
                 <div className="h-8 w-8 rounded-lg bg-blue-600/20 border border-blue-500/20 flex items-center justify-center text-blue-400">
                   <User className="w-4 h-4" />
                 </div>
                 <div className="overflow-hidden">
                   <div className="text-xs font-bold text-white truncate">{user.name}</div>
-                  <div className="text-[9px] uppercase tracking-wider font-bold text-blue-400 truncate">{user.role}</div>
+                  <div className="text-[9px] uppercase tracking-widest font-bold text-blue-400 truncate flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
+                    {user.role}
+                  </div>
                 </div>
               </div>
               <button
@@ -170,16 +182,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         )}
       </aside>
 
-      {/* Main Screen Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* Main Screen Area (Floating glass container) */}
+      <div className="flex-1 flex flex-col min-w-0 glass-panel rounded-2xl overflow-hidden">
         {/* Top Header */}
-        <header className="h-16 border-b border-white/5 flex items-center justify-between px-8 select-none">
+        <header className="h-16 border-b border-white/5 flex items-center justify-between px-8 select-none shrink-0 bg-white/[0.01]">
           <div className="flex items-center gap-3">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Workspace:</span>
+            <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Workspace:</span>
             {user ? (
-              <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-xs font-semibold text-white">
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-xs font-semibold text-white">
+                <span className="h-2 w-2 rounded-full bg-blue-500" />
                 {user.organization?.name}
-              </span>
+                <ChevronDown className="w-3.5 h-3.5 text-gray-500" />
+              </div>
             ) : (
               <div className="h-6 w-24 bg-white/5 rounded-lg animate-pulse" />
             )}
@@ -189,7 +203,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Search command bar */}
             <div
               onClick={() => setCmdOpen(true)}
-              className="flex items-center gap-8 px-4 py-2 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.04] text-xs text-gray-500 cursor-pointer select-none transition-all"
+              className="flex items-center gap-8 px-4 py-2 rounded-xl bg-white/[0.01] border border-white/5 hover:border-white/10 hover:bg-white/[0.03] text-xs text-gray-500 cursor-pointer select-none transition-all"
             >
               <span className="flex items-center gap-2">
                 <Search className="w-3.5 h-3.5" />
@@ -202,15 +216,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="relative">
               <button
                 onClick={() => setNotifOpen(!notifOpen)}
-                className="h-9 w-9 rounded-xl bg-white/[0.02] border border-white/5 hover:border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all cursor-pointer"
+                className="h-9 w-9 rounded-xl bg-white/[0.01] border border-white/5 hover:border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all cursor-pointer relative"
               >
                 <Bell className="w-4 h-4" />
+                {notifications.length > 0 && (
+                  <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-blue-500" />
+                )}
               </button>
               {notifOpen && (
                 <div className="absolute right-0 mt-2 w-80 glass-panel border border-white/10 rounded-2xl p-4 shadow-2xl z-50">
-                  <h4 className="text-sm font-bold text-white mb-3">Workspace Notifications</h4>
+                  <h4 className="text-xs uppercase tracking-widest font-bold text-white mb-3">Workspace Notifications</h4>
                   <div className="space-y-2 max-h-60 overflow-y-auto">
-                    <p className="text-xs text-gray-500 text-center py-4">No new notifications</p>
+                    {notifications.length === 0 ? (
+                      <p className="text-xs text-gray-500 text-center py-4">No new notifications</p>
+                    ) : (
+                      notifications.map(n => (
+                        <div key={n.id} className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5 text-xs text-gray-300">
+                          <div>{n.text}</div>
+                          <span className="text-[10px] text-gray-500 font-mono block mt-1">{n.time}</span>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               )}
@@ -226,9 +252,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </main>
       </div>
 
-      {/* COMMAND PALETTE MODAL */}
+      {/* COMMAND PALETTE MODAL (Frosted glass overlay) */}
       {cmdOpen && (
-        <div className="fixed inset-0 bg-[#030712]/80 backdrop-blur-sm flex items-start justify-center pt-24 z-[100] px-4">
+        <div className="fixed inset-0 bg-[#030712]/70 backdrop-blur-md flex items-start justify-center pt-24 z-[100] px-4">
           <div className="w-full max-w-xl glass-panel border-white/10 rounded-2xl overflow-hidden shadow-2xl">
             {/* Input bar */}
             <div className="flex items-center gap-3 px-4 py-4 border-b border-white/5 bg-white/[0.01]">
@@ -243,7 +269,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               />
               <button
                 onClick={() => setCmdOpen(false)}
-                className="p-1 hover:bg-white/5 rounded-lg text-gray-400 hover:text-white cursor-pointer"
+                className="p-1.5 hover:bg-white/5 rounded-lg text-gray-400 hover:text-white cursor-pointer transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -254,8 +280,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {searchQuery.trim().length === 0 ? (
                 <div className="text-center py-6 text-gray-500 text-xs space-y-1">
                   <Command className="w-6 h-6 mx-auto mb-2 text-gray-600" />
-                  <p>Search legal files, review checklists, and audits.</p>
-                  <p className="text-[10px] text-gray-600">Start typing to fetch matching records...</p>
+                  <p className="font-semibold text-white">Workspace Search</p>
+                  <p className="text-[10px] text-gray-600">Search legal files, review checklists, and audits.</p>
                 </div>
               ) : (
                 <>
@@ -268,7 +294,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       {/* Contracts list */}
                       {searchResults.contracts.length > 0 && (
                         <div>
-                          <div className="text-[10px] font-bold uppercase tracking-wider text-blue-400 mb-2 px-2">Contracts</div>
+                          <div className="text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-2 px-2">Contracts</div>
                           <div className="space-y-1">
                             {searchResults.contracts.map((c) => (
                               <div
@@ -292,7 +318,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       {/* Tasks list */}
                       {searchResults.tasks.length > 0 && (
                         <div>
-                          <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 mb-2 px-2">Checklist Tasks</div>
+                          <div className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-2 px-2">Checklist Tasks</div>
                           <div className="space-y-1">
                             {searchResults.tasks.map((t) => (
                               <div
