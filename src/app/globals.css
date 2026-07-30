@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #030712; 
+  --background: #041229; 
   --foreground: #f8fafc;
   
   /* Redesigned Brand Accent Scales */
@@ -24,16 +24,11 @@ body {
   position: relative;
 }
 
-/* Premium Layered Radial Background + SVG Fractal Noise Overlay */
 .os-background {
   position: fixed;
   inset: 0;
   z-index: -10;
-  background-color: #030712;
-  background-image: 
-    radial-gradient(circle at 10% 20%, rgba(15, 23, 42, 0.8) 0%, transparent 50%),
-    radial-gradient(circle at 90% 80%, rgba(30, 41, 59, 0.6) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(11, 15, 25, 1) 0%, rgba(3, 7, 18, 1) 100%);
+  background-color: #041229;
   overflow: hidden;
 }
 
@@ -162,4 +157,92 @@ body {
 
 .font-display {
   font-family: var(--font-display);
+}
+
+/* Cinematic Landing Page Redesign Additions */
+@keyframes auroraGlow {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(40px, -60px) scale(1.15);
+  }
+  66% {
+    transform: translate(-30px, 30px) scale(0.9);
+  }
+}
+
+.animate-aurora-slow {
+  animation: auroraGlow 25s infinite ease-in-out;
+}
+
+.animate-aurora-slower {
+  animation: auroraGlow 30s infinite ease-in-out reverse;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.rotate-x-12 {
+  transform: rotateX(8deg) rotateY(-3deg) rotateZ(0.5deg);
+}
+
+.rotate-x-hover {
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rotate-x-hover:hover {
+  transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1.015);
+}
+
+/* Premium ambient breathing animation */
+@keyframes ambientBreathe {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.08); }
+}
+
+@keyframes ambientDrift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(15px, -10px) scale(1.03); }
+  50% { transform: translate(-10px, 8px) scale(0.97); }
+  75% { transform: translate(8px, 12px) scale(1.02); }
+}
+
+@keyframes softFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes subtleGlow {
+  0%, 100% { opacity: 0.4; filter: blur(80px); }
+  50% { opacity: 0.7; filter: blur(100px); }
+}
+
+.animate-breathe {
+  animation: ambientBreathe 8s ease-in-out infinite;
+}
+
+.animate-breathe-slow {
+  animation: ambientBreathe 12s ease-in-out infinite;
+}
+
+.animate-drift {
+  animation: ambientDrift 20s ease-in-out infinite;
+}
+
+.animate-drift-slow {
+  animation: ambientDrift 28s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: softFloat 6s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: softFloat 8s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: subtleGlow 6s ease-in-out infinite;
 }
