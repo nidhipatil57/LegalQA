@@ -163,3 +163,41 @@ body {
 .font-display {
   font-family: var(--font-display);
 }
+
+/* Cinematic Landing Page Redesign Additions */
+@keyframes auroraGlow {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(40px, -60px) scale(1.15);
+  }
+  66% {
+    transform: translate(-30px, 30px) scale(0.9);
+  }
+}
+
+.animate-aurora-slow {
+  animation: auroraGlow 25s infinite ease-in-out;
+}
+
+.animate-aurora-slower {
+  animation: auroraGlow 30s infinite ease-in-out reverse;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.rotate-x-12 {
+  transform: rotateX(8deg) rotateY(-3deg) rotateZ(0.5deg);
+}
+
+.rotate-x-hover {
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rotate-x-hover:hover {
+  transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1.015);
+}
+
