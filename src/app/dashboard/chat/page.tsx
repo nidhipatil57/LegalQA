@@ -3,10 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
-  MessageSquare, Send, Bot, User, Bookmark, Loader2, Sparkles,
-  Command, Cpu, Zap, ArrowDown, RefreshCw, FileText
+  MessageSquare, Send, Bot, User, Loader2, Sparkles,
+  Command, Cpu, Zap, FileText, Plus, HelpCircle
 } from 'lucide-react';
-
 import { Suspense } from 'react';
 
 function ChatContent() {
@@ -26,15 +25,14 @@ function ChatContent() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [loadingConv, setLoadingConv] = useState(false);
   
-  // Analytics
-  const [model, setModel] = useState('llama-3.3-70b-versatile');
+  // Model info
+  const [model] = useState('llama-3.3-70b-versatile');
   const [latency, setLatency] = useState<number | null>(null);
   const [tokenUsage, setTokenUsage] = useState<{ prompt: number; completion: number } | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Scroll to bottom on new messages
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, streamingMessage]);
 
@@ -51,7 +49,8 @@ function ChatContent() {
         } else if (analyzed.length > 0) {
           setSelectedContractId(analyzed[0].id);
         }
-      });
+      })
+      .catch((err) => console.error('Fetch contracts in chat failed:', err));
 
     fetchConversations();
   }, [paramContractId]);
@@ -79,7 +78,10 @@ function ChatContent() {
           }
         }
       })
-      .catch(() => setLoadingConv(false));
+      .catch((err) => {
+        console.error('Fetch conversations failed:', err);
+        setLoadingConv(false);
+      });
   };
 
   const handleSelectConversation = (conv: any) => {
@@ -99,15 +101,15 @@ function ChatContent() {
     setTokenUsage(null);
   };
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputMessage.trim() || isStreaming) return;
+  const handleSendMessage = async (e?: React.FormEvent, directText?: string) => {
+    if (e) e.preventDefault();
+    const textToSend = directText || inputMessage;
+    if (!textToSend.trim() || isStreaming) return;
 
-    const userText = inputMessage;
     setInputMessage('');
     
     // Add user message locally
-    const newUserMsg = { id: Math.random().toString(), role: 'user', content: userText, createdAt: new Date() };
+    const newUserMsg = { id: Math.random().toString(), role: 'user', content: textToSend, createdAt: new Date() };
     setMessages(prev => [...prev, newUserMsg]);
     setIsStreaming(true);
     setStreamingMessage('');
@@ -120,7 +122,7 @@ function ChatContent() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: userText,
+          message: textToSend,
           contractId: selectedContractId || null,
           conversationId: activeConversation?.id || null,
         }),
@@ -142,7 +144,6 @@ function ChatContent() {
         if (value) {
           const textChunk = decoder.decode(value);
           
-          // Parse metadata chunk if it exists
           if (isFirstMetadataChunk && textChunk.startsWith('__METADATA__:')) {
             isFirstMetadataChunk = false;
             const endIdx = textChunk.indexOf('\n\n');
@@ -151,7 +152,6 @@ function ChatContent() {
               const metaData = JSON.parse(metaJsonStr);
               setStreamingCitations(metaData.citations || []);
               
-              // If this was a new conversation, update active conv state
               if (!activeConversation) {
                 fetchConversations(metaData.conversationId);
               }
@@ -159,7 +159,6 @@ function ChatContent() {
               console.error('Error parsing stream metadata:', err);
             }
             
-            // Append remaining text (if any)
             const remainingText = textChunk.substring(endIdx + 2);
             if (remainingText) {
               accumulatedText += remainingText;
@@ -174,11 +173,10 @@ function ChatContent() {
 
       setLatency(Date.now() - startTime);
       setTokenUsage({
-        prompt: Math.round(userText.length / 4) + 120, // estimate
+        prompt: Math.round(textToSend.length / 4) + 120,
         completion: Math.round(accumulatedText.length / 4),
       });
 
-      // Save complete assistant message locally
       setMessages(prev => [
         ...prev,
         {
@@ -191,7 +189,6 @@ function ChatContent() {
       ]);
       setStreamingMessage('');
 
-      // Refresh list to pull updated messages
       if (activeConversation) {
         fetchConversations(activeConversation.id);
       }
@@ -202,20 +199,32 @@ function ChatContent() {
     }
   };
 
+  // Pre-filled suggestion prompt handler
+  const handleSuggestionClick = (promptText: string) => {
+    handleSendMessage(undefined, promptText);
+  };
+
+  const suggestions = [
+    { label: "Liability Limits", text: "What is the limitation of liability cap on this agreement?" },
+    { label: "Payment & SLA", text: "Summarize the payment terms, notice periods, and invoice deadlines." },
+    { label: "Termination Rules", text: "Under what conditions can the parties terminate this contract early?" },
+    { label: "IP Ownership", text: "Does the contract transfer intellectual property ownership? Explain." }
+  ];
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 min-h-[80vh] items-stretch">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 min-h-[80vh] items-stretch animate-fade-in">
       {/* Sidebar Panel: Conversation History */}
       <div className="lg:col-span-1 glass-card rounded-2xl p-4 flex flex-col justify-between min-h-[350px]">
         <div>
           <button
             onClick={handleStartNewChat}
-            className="w-full py-2.5 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/15 text-blue-400 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 transition cursor-pointer mb-4"
+            className="w-full py-2.5 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/15 text-blue-400 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer mb-4 hover:scale-[1.02]"
           >
-            <PlusIcon className="w-4 h-4" />
-            New Audit Discussion
+            <Plus className="w-4 h-4" />
+            New Discussion
           </button>
 
-          <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-3 px-2">Discussion Threads</h3>
+          <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3 px-2">Discussion Threads</h3>
           
           {loadingConv ? (
             <div className="text-center py-6 text-xs text-gray-500 flex items-center justify-center gap-2">
@@ -231,7 +240,7 @@ function ChatContent() {
                   onClick={() => handleSelectConversation(conv)}
                   className={`p-2.5 rounded-xl cursor-pointer text-left text-xs truncate transition flex items-center gap-2 ${
                     activeConversation?.id === conv.id
-                      ? 'bg-blue-600/10 border border-blue-500/15 text-blue-400'
+                      ? 'bg-blue-600/10 border border-blue-500/15 text-blue-400 font-semibold'
                       : 'hover:bg-white/[0.02] border border-transparent text-gray-400 hover:text-white'
                   }`}
                 >
@@ -245,15 +254,15 @@ function ChatContent() {
 
         {/* Mapped Contract Context */}
         <div className="border-t border-white/5 pt-4 mt-4">
-          <label className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block mb-2 px-1">Attached Context</label>
+          <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block mb-2 px-1">Attached Context</label>
           <select
             value={selectedContractId}
             onChange={(e) => setSelectedContractId(e.target.value)}
-            className="w-full px-2.5 py-2 text-xs rounded-xl bg-white/[0.03] border border-white/10 text-white outline-none cursor-pointer"
+            className="w-full px-2.5 py-2 text-xs rounded-xl bg-white/[0.03] border border-white/10 text-white outline-none cursor-pointer hover:border-white/20 transition-colors"
           >
-            <option value="" className="bg-[#090d1a]">Global Workspace Context</option>
+            <option value="" className="bg-[#090d16]">Global Workspace Context</option>
             {contracts.map((c) => (
-              <option key={c.id} value={c.id} className="bg-[#090d1a]">
+              <option key={c.id} value={c.id} className="bg-[#090d16]">
                 {c.title}
               </option>
             ))}
@@ -266,15 +275,17 @@ function ChatContent() {
         {/* Chat Feed Header */}
         <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
           <div className="flex items-center gap-2">
-            <Bot className="w-5 h-5 text-blue-400" />
+            <div className="h-8 w-8 rounded-xl bg-blue-600/10 border border-blue-500/15 flex items-center justify-center text-blue-400">
+              <Bot className="w-4.5 h-4.5" />
+            </div>
             <div>
-              <h3 className="text-sm font-bold text-white leading-none">LegalQA Assistant</h3>
-              <span className="text-[10px] text-gray-500">Autonomous RAG Reasoning</span>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-white leading-none">LegalQA AI</h3>
+              <span className="text-[9px] text-gray-500 uppercase tracking-widest font-semibold block mt-0.5">Autonomous RAG Agent</span>
             </div>
           </div>
 
           {/* Model info banner */}
-          <div className="flex items-center gap-4 text-[10px] text-gray-500 font-mono">
+          <div className="flex items-center gap-4 text-[9px] text-gray-500 font-mono">
             <span className="flex items-center gap-1"><Cpu className="w-3.5 h-3.5 text-gray-500" /> {model}</span>
             {latency && <span className="flex items-center gap-1"><Zap className="w-3.5 h-3.5 text-yellow-500" /> {latency}ms</span>}
           </div>
@@ -283,12 +294,33 @@ function ChatContent() {
         {/* Message history */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6 max-h-[50vh] min-h-[300px]">
           {messages.length === 0 && !streamingMessage ? (
-            <div className="text-center py-20 text-gray-500 space-y-4 max-w-sm mx-auto">
-              <Command className="w-10 h-10 text-gray-700 mx-auto" />
-              <h4 className="text-base font-bold text-white font-display">Contract Intelligence Assistant</h4>
-              <p className="text-xs leading-relaxed">
-                Ask specific questions about the attached contract, compare liabilities, or query payment obligations.
-              </p>
+            <div className="flex flex-col justify-center items-center h-full max-w-lg mx-auto py-10 text-center space-y-8">
+              <div className="space-y-3">
+                <div className="h-12 w-12 rounded-2xl bg-white/[0.01] border border-white/5 flex items-center justify-center text-blue-400 mx-auto">
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <h4 className="text-xl font-bold text-white font-display">Intelligence Chat Assistant</h4>
+                <p className="text-xs leading-relaxed text-gray-400 font-light">
+                  Initiate audit discussions. Query liabilities, notice bounds, and payment structures directly in natural language.
+                </p>
+              </div>
+
+              {/* Suggestion prompt chips */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
+                {suggestions.map((s, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSuggestionClick(s.text)}
+                    className="p-3 text-left rounded-xl bg-white/[0.01] hover:bg-white/[0.03] border border-white/5 hover:border-white/10 transition-all text-xs flex items-start gap-2.5 cursor-pointer group"
+                  >
+                    <HelpCircle className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-bold text-white block mb-0.5">{s.label}</span>
+                      <span className="text-[10px] text-gray-400 font-light leading-relaxed truncate block max-w-[200px] group-hover:text-gray-300">{s.text}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
           ) : (
             <>
@@ -305,27 +337,27 @@ function ChatContent() {
                     </div>
 
                     <div className="space-y-3">
-                      <div className={`p-4 rounded-2xl border text-sm leading-relaxed ${
+                      <div className={`p-4 rounded-2xl border text-xs leading-relaxed shadow-sm ${
                         isUser 
                           ? 'bg-blue-600/10 border-blue-500/10 text-white rounded-tr-none' 
-                          : 'bg-white/[0.02] border-white/5 text-gray-200 rounded-tl-none'
+                          : 'bg-[#090d16]/50 border-white/5 text-gray-200 rounded-tl-none font-light'
                       }`}>
                         <div className="whitespace-pre-line">{m.content}</div>
                       </div>
 
                       {/* Message citations */}
                       {m.citations && m.citations.length > 0 && (
-                        <div className="pl-2 space-y-1">
-                          <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">Sources Mapped</span>
+                        <div className="pl-2 space-y-1.5">
+                          <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest block">Sources Cited</span>
                           <div className="flex flex-wrap gap-2">
                             {m.citations.map((cit: any, idx: number) => (
                               <div
                                 key={idx}
-                                className="px-2 py-1 rounded bg-white/[0.02] border border-white/5 text-[9px] text-gray-400 flex items-center gap-1 font-mono hover:border-white/10"
+                                className="px-2.5 py-1 rounded-lg bg-white/[0.01] border border-white/5 text-[9px] text-gray-400 flex items-center gap-1 font-mono hover:border-white/10"
                                 title={cit.snippet}
                               >
                                 <FileText className="w-3 h-3 text-blue-400" />
-                                Citation {cit.citationId} (Index {cit.chunkIndex})
+                                Citation {cit.citationId} (P. {cit.chunkIndex + 1})
                               </div>
                             ))}
                           </div>
@@ -338,25 +370,25 @@ function ChatContent() {
 
               {/* Streaming Content */}
               {streamingMessage && (
-                <div className="flex gap-4 max-w-[85%]">
+                <div className="flex gap-4 max-w-[85%] animate-pulse">
                   <div className="h-8 w-8 rounded-lg bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0">
                     <Bot className="w-4 h-4" />
                   </div>
                   <div className="space-y-3">
-                    <div className="p-4 rounded-2xl bg-white/[0.02] border-white/5 text-sm leading-relaxed text-gray-200 rounded-tl-none">
+                    <div className="p-4 rounded-2xl bg-[#090d16]/50 border-white/5 text-xs leading-relaxed text-gray-200 rounded-tl-none font-light">
                       <div className="whitespace-pre-line">{streamingMessage}</div>
-                      <span className="inline-block w-1.5 h-3 bg-blue-500 ml-1 animate-pulse" />
+                      <span className="inline-block w-1.5 h-3 bg-blue-500 ml-1 animate-ping" />
                     </div>
 
                     {/* Citations while streaming */}
                     {streamingCitations.length > 0 && (
-                      <div className="pl-2 space-y-1">
-                        <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">Extracting Sources...</span>
+                      <div className="pl-2 space-y-1.5">
+                        <span className="text-[8px] font-bold text-gray-500 uppercase tracking-widest block">Retrieving Sources...</span>
                         <div className="flex flex-wrap gap-2">
                           {streamingCitations.map((cit: any, idx: number) => (
-                            <div key={idx} className="px-2 py-1 rounded bg-white/[0.02] border border-white/5 text-[9px] text-gray-500 flex items-center gap-1 font-mono">
+                            <div key={idx} className="px-2.5 py-1 rounded-lg bg-white/[0.01] border border-white/5 text-[9px] text-gray-500 flex items-center gap-1 font-mono">
                               <FileText className="w-3 h-3 text-blue-500/70" />
-                              Citation {cit.citationId} (Index {cit.chunkIndex})
+                              Citation {cit.citationId} (P. {cit.chunkIndex + 1})
                             </div>
                           ))}
                         </div>
@@ -371,21 +403,21 @@ function ChatContent() {
         </div>
 
         {/* Input Form */}
-        <form onSubmit={handleSendMessage} className="p-4 border-t border-white/5 bg-white/[0.01]">
-          <div className="flex items-center gap-3 bg-white/[0.02] border border-white/5 focus-within:border-blue-500/50 rounded-2xl px-4 py-3 transition">
+        <form onSubmit={(e) => handleSendMessage(e)} className="p-4 border-t border-white/5 bg-white/[0.01]">
+          <div className="flex items-center gap-3 bg-white/[0.01] border border-white/5 focus-within:border-blue-500/40 rounded-2xl px-4 py-3 transition-all duration-300">
             <input
               type="text"
               disabled={isStreaming}
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              placeholder={isStreaming ? 'AI is typing...' : 'Ask a contract question... (e.g. Can supplier terminate early?)'}
-              className="flex-1 bg-transparent border-none text-white text-sm outline-none placeholder-gray-500 disabled:text-gray-600"
+              placeholder={isStreaming ? 'Generating agentic response...' : 'Ask a contract question... (e.g. Is there any late fee penalty?)'}
+              className="flex-1 bg-transparent border-none text-white text-xs outline-none placeholder-gray-500 disabled:text-gray-600"
             />
             
             <button
               type="submit"
               disabled={!inputMessage.trim() || isStreaming}
-              className="h-8 w-8 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/30 text-white flex items-center justify-center transition cursor-pointer"
+              className="h-8 w-8 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:bg-blue-600/30 text-white flex items-center justify-center transition-all duration-200 cursor-pointer hover:scale-[1.05]"
             >
               {isStreaming ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -396,25 +428,19 @@ function ChatContent() {
           </div>
         </form>
       </div>
-
     </div>
   );
 }
 
 export default function ChatPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh] text-gray-400"><Loader2 className="w-8 h-8 animate-spin text-blue-500 mr-3" /> Loading Chat Assistant...</div>}>
+    <Suspense fallback={
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-400 space-y-4">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+        <span className="text-xs uppercase tracking-widest font-bold">Connecting discussion thread...</span>
+      </div>
+    }>
       <ChatContent />
     </Suspense>
-  );
-}
-
-// Simple Helper Icon Components
-function PlusIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="M5 12h14" />
-      <path d="M12 5v14" />
-    </svg>
   );
 }
