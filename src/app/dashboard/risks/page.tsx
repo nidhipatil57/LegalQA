@@ -65,22 +65,30 @@ function RisksContent() {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Title */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="space-y-8 animate-fade-in relative">
+      {/* Ambient Radial Blur */}
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-red-600/5 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Header Title Banner */}
+      <div className="spatial-card rounded-2xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
         <div>
-          <h1 className="font-display text-3xl font-extrabold text-white">Risk Detection Center</h1>
-          <p className="text-sm text-gray-400">Review AI-flagged liabilities, severity warnings, and rewrite recommendations.</p>
+          <h1 className="font-display text-3xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
+            Risk Detection Center <Sparkles className="w-5 h-5 text-blue-400 animate-pulse" />
+          </h1>
+          <p className="text-sm text-gray-300 font-light mt-1">Review AI-flagged liabilities, severity warnings, and automated rewrite recommendations.</p>
         </div>
 
         {/* Dropdown Selector */}
         {contracts.length > 0 && (
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest flex items-center gap-1.5"><Filter className="w-3.5 h-3.5" /> Select Audit:</span>
+          <div className="flex items-center gap-2.5">
+            <span className="text-[10px] text-blue-300 font-extrabold uppercase tracking-[0.15em] flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20">
+              <Filter className="w-3.5 h-3.5 text-blue-400" /> Select Audit:
+            </span>
             <select
               value={selectedContractId}
               onChange={(e) => setSelectedContractId(e.target.value)}
-              className="px-3 py-2 text-xs font-semibold rounded-xl bg-white/[0.03] border border-white/10 text-white outline-none cursor-pointer hover:border-white/20 transition-colors"
+              className="px-3.5 py-2 text-xs font-bold rounded-xl bg-white/[0.04] border border-white/10 text-white outline-none cursor-pointer hover:border-blue-500/40 transition-colors shadow-sm"
             >
               {contracts.map((c) => (
                 <option key={c.id} value={c.id} className="bg-[#090d16] text-white">
@@ -95,12 +103,12 @@ function RisksContent() {
       {loadingList ? (
         <div className="flex flex-col items-center justify-center min-h-[50vh] text-gray-500 space-y-4">
           <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-          <span className="text-[10px] uppercase tracking-widest font-bold">Querying audit logs...</span>
+          <span className="text-[10px] uppercase tracking-widest font-bold text-blue-400">Querying audit telemetry...</span>
         </div>
       ) : contracts.length === 0 ? (
-        <div className="glass-panel border-white/5 rounded-2xl p-12 text-center text-gray-500 space-y-4 max-w-lg mx-auto">
-          <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto" />
-          <h3 className="text-lg font-bold text-white font-display">No Audited Contracts</h3>
+        <div className="spatial-card rounded-2xl p-12 text-center text-gray-400 space-y-4 max-w-lg mx-auto">
+          <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto animate-pulse" />
+          <h3 className="text-xl font-extrabold text-white font-display">No Audited Contracts</h3>
           <p className="text-xs leading-relaxed max-w-sm mx-auto font-light">
             Before reviewing risks, you must upload a document and click "Run AI Analysis" inside the Contracts tab.
           </p>
@@ -108,20 +116,22 @@ function RisksContent() {
       ) : loadingRisks ? (
         <div className="flex flex-col items-center justify-center min-h-[50vh] text-gray-500 space-y-4">
           <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-          <span className="text-[10px] uppercase tracking-widest font-bold">Constructing telemetry matrix...</span>
+          <span className="text-[10px] uppercase tracking-widest font-bold text-blue-400">Constructing telemetry matrix...</span>
         </div>
       ) : risks.length === 0 ? (
-        <div className="glass-card rounded-2xl p-12 text-center text-gray-500 space-y-3">
-          <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mx-auto">
-            <ShieldAlert className="w-6 h-6" />
+        <div className="spatial-card rounded-2xl p-12 text-center text-gray-400 space-y-3">
+          <div className="h-14 w-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mx-auto shadow-md">
+            <ShieldAlert className="w-7 h-7" />
           </div>
-          <h3 className="text-base font-bold text-white font-display">Zero Risks Detected</h3>
-          <p className="text-xs text-gray-400 font-light">Congratulations. This contract complies with typical corporate standard terms.</p>
+          <h3 className="text-lg font-extrabold text-white font-display">Zero Risks Detected</h3>
+          <p className="text-xs text-gray-300 font-light">Congratulations. This contract complies with typical corporate standard terms.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6">
           {risks.map((risk) => (
-            <div key={risk.id} className="glass-card rounded-2xl p-6 border-white/5 flex flex-col space-y-6 relative overflow-hidden">
+            <div key={risk.id} className="spatial-card rounded-2xl p-6 flex flex-col space-y-6 relative overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.5)]">
+              <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
+
               {/* Highlight ribbon based on severity */}
               <div className={`absolute top-0 left-0 w-1.5 h-full ${
                 risk.severity === 'HIGH' 

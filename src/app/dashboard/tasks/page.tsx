@@ -158,17 +158,23 @@ export default function TasksPage() {
   const doneTasks = tasks.filter(t => t.status === 'DONE');
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Title */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="space-y-8 animate-fade-in relative">
+      {/* Ambient Radial Blur */}
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Header Banner */}
+      <div className="spatial-card rounded-2xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
         <div>
-          <h1 className="font-display text-3xl font-extrabold text-white">Review Checklists & Tasks</h1>
-          <p className="text-sm text-gray-400">Track audits, delegate reviews, and manage risk validation checklists.</p>
+          <h1 className="font-display text-3xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
+            Review Checklists & Tasks <Sparkles className="w-5 h-5 text-blue-400 animate-pulse" />
+          </h1>
+          <p className="text-sm text-gray-300 font-light mt-1">Track audits, delegate reviews, and manage risk validation checklists.</p>
         </div>
 
         <button
           onClick={() => setCreateOpen(true)}
-          className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl flex items-center gap-2 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/25 transition-all cursor-pointer hover:scale-[1.02]"
+          className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl flex items-center gap-2 shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all cursor-pointer hover:scale-[1.02]"
         >
           <Plus className="w-4 h-4" /> Create Checklist Task
         </button>
@@ -177,7 +183,7 @@ export default function TasksPage() {
       {loading ? (
         <div className="flex flex-col items-center justify-center min-h-[50vh] text-gray-500 space-y-4">
           <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-          <span className="text-xs uppercase tracking-widest font-bold">Retrieving review boards...</span>
+          <span className="text-xs uppercase tracking-widest font-bold text-blue-400">Retrieving review boards...</span>
         </div>
       ) : (
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-8 items-stretch">
@@ -185,102 +191,103 @@ export default function TasksPage() {
           <div className="xl:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
             
             {/* TODO Column */}
-            <div className="glass-card rounded-2xl p-4 flex flex-col space-y-4 border-t-2 border-t-blue-500">
-              <div className="flex justify-between items-center px-1 border-b border-white/5 pb-2">
-                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">To Do</span>
-                <span className="px-2 py-0.5 rounded text-[9px] bg-white/5 font-mono text-gray-400">{todoTasks.length}</span>
+            <div className="spatial-card rounded-2xl p-4 flex flex-col space-y-4 border-t-2 border-t-blue-500 shadow-md">
+              <div className="flex justify-between items-center px-1 border-b border-white/[0.06] pb-2.5">
+                <span className="text-[10px] font-extrabold text-blue-300 uppercase tracking-[0.15em]">To Do</span>
+                <span className="px-2 py-0.5 rounded text-[9px] bg-blue-500/10 border border-blue-500/20 font-mono text-blue-300 font-bold">{todoTasks.length}</span>
               </div>
-              <div className="space-y-2 overflow-y-auto max-h-[450px] pr-1">
+              <div className="space-y-2.5 overflow-y-auto max-h-[450px] pr-1">
                 {todoTasks.map((t) => (
                   <div
                     key={t.id}
                     onClick={() => setSelectedTask(t)}
-                    className={`p-3 rounded-xl border text-left cursor-pointer transition-all duration-300 ${
+                    className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all duration-300 ${
                       selectedTask?.id === t.id 
-                        ? 'bg-blue-600/10 border-blue-500/30' 
-                        : 'bg-white/[0.01] border-white/5 hover:border-white/10 hover:bg-white/[0.02]'
+                        ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/10 border-blue-500/40 shadow-sm font-semibold' 
+                        : 'bg-white/[0.02] border-white/[0.06] hover:border-white/20 hover:bg-white/[0.04]'
                     }`}
                   >
                     <span className="text-xs font-bold text-white block">{t.title}</span>
-                    <span className="text-[8px] uppercase tracking-wider text-gray-500 font-bold mt-2 block truncate">{t.contract?.title || 'Global Context'}</span>
+                    <span className="text-[8px] uppercase tracking-wider text-gray-400 font-bold mt-2 block truncate">{t.contract?.title || 'Global Context'}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* IN_PROGRESS Column */}
-            <div className="glass-card rounded-2xl p-4 flex flex-col space-y-4 border-t-2 border-t-yellow-500">
-              <div className="flex justify-between items-center px-1 border-b border-white/5 pb-2">
-                <span className="text-[9px] font-bold text-yellow-500 uppercase tracking-widest">In Progress</span>
-                <span className="px-2 py-0.5 rounded text-[9px] bg-yellow-500/10 font-mono text-yellow-500">{inProgressTasks.length}</span>
+            <div className="spatial-card rounded-2xl p-4 flex flex-col space-y-4 border-t-2 border-t-yellow-500 shadow-md">
+              <div className="flex justify-between items-center px-1 border-b border-white/[0.06] pb-2.5">
+                <span className="text-[10px] font-extrabold text-yellow-300 uppercase tracking-[0.15em]">In Progress</span>
+                <span className="px-2 py-0.5 rounded text-[9px] bg-yellow-500/10 border border-yellow-500/20 font-mono text-yellow-300 font-bold">{inProgressTasks.length}</span>
               </div>
-              <div className="space-y-2 overflow-y-auto max-h-[450px] pr-1">
+              <div className="space-y-2.5 overflow-y-auto max-h-[450px] pr-1">
                 {inProgressTasks.map((t) => (
                   <div
                     key={t.id}
                     onClick={() => setSelectedTask(t)}
-                    className={`p-3 rounded-xl border text-left cursor-pointer transition-all duration-300 ${
+                    className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all duration-300 ${
                       selectedTask?.id === t.id 
-                        ? 'bg-blue-600/10 border-blue-500/30' 
-                        : 'bg-white/[0.01] border-white/5 hover:border-white/10 hover:bg-white/[0.02]'
+                        ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/10 border-blue-500/40 shadow-sm font-semibold' 
+                        : 'bg-white/[0.02] border-white/[0.06] hover:border-white/20 hover:bg-white/[0.04]'
                     }`}
                   >
                     <span className="text-xs font-bold text-white block">{t.title}</span>
-                    <span className="text-[8px] uppercase tracking-wider text-gray-500 font-bold mt-2 block truncate">{t.contract?.title || 'Global Context'}</span>
+                    <span className="text-[8px] uppercase tracking-wider text-gray-400 font-bold mt-2 block truncate">{t.contract?.title || 'Global Context'}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* REVIEW Column */}
-            <div className="glass-card rounded-2xl p-4 flex flex-col space-y-4 border-t-2 border-t-purple-500">
-              <div className="flex justify-between items-center px-1 border-b border-white/5 pb-2">
-                <span className="text-[9px] font-bold text-purple-400 uppercase tracking-widest">Under Review</span>
-                <span className="px-2 py-0.5 rounded text-[9px] bg-purple-500/10 font-mono text-purple-400">{reviewTasks.length}</span>
+            <div className="spatial-card rounded-2xl p-4 flex flex-col space-y-4 border-t-2 border-t-purple-500 shadow-md">
+              <div className="flex justify-between items-center px-1 border-b border-white/[0.06] pb-2.5">
+                <span className="text-[10px] font-extrabold text-purple-300 uppercase tracking-[0.15em]">Under Review</span>
+                <span className="px-2 py-0.5 rounded text-[9px] bg-purple-500/10 border border-purple-500/20 font-mono text-purple-300 font-bold">{reviewTasks.length}</span>
               </div>
-              <div className="space-y-2 overflow-y-auto max-h-[450px] pr-1">
+              <div className="space-y-2.5 overflow-y-auto max-h-[450px] pr-1">
                 {reviewTasks.map((t) => (
                   <div
                     key={t.id}
                     onClick={() => setSelectedTask(t)}
-                    className={`p-3 rounded-xl border text-left cursor-pointer transition-all duration-300 ${
+                    className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all duration-300 ${
                       selectedTask?.id === t.id 
-                        ? 'bg-blue-600/10 border-blue-500/30' 
-                        : 'bg-white/[0.01] border-white/5 hover:border-white/10 hover:bg-white/[0.02]'
+                        ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/10 border-blue-500/40 shadow-sm font-semibold' 
+                        : 'bg-white/[0.02] border-white/[0.06] hover:border-white/20 hover:bg-white/[0.04]'
                     }`}
                   >
                     <span className="text-xs font-bold text-white block">{t.title}</span>
-                    <span className="text-[8px] uppercase tracking-wider text-gray-500 font-bold mt-2 block truncate">{t.contract?.title || 'Global Context'}</span>
+                    <span className="text-[8px] uppercase tracking-wider text-gray-400 font-bold mt-2 block truncate">{t.contract?.title || 'Global Context'}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* DONE Column */}
-            <div className="glass-card rounded-2xl p-4 flex flex-col space-y-4 border-t-2 border-t-emerald-500">
-              <div className="flex justify-between items-center px-1 border-b border-white/5 pb-2">
-                <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-widest">Completed</span>
-                <span className="px-2 py-0.5 rounded text-[9px] bg-emerald-500/10 font-mono text-emerald-400">{doneTasks.length}</span>
+            <div className="spatial-card rounded-2xl p-4 flex flex-col space-y-4 border-t-2 border-t-emerald-500 shadow-md">
+              <div className="flex justify-between items-center px-1 border-b border-white/[0.06] pb-2.5">
+                <span className="text-[10px] font-extrabold text-emerald-300 uppercase tracking-[0.15em]">Completed</span>
+                <span className="px-2 py-0.5 rounded text-[9px] bg-emerald-500/10 border border-emerald-500/20 font-mono text-emerald-300 font-bold">{doneTasks.length}</span>
               </div>
-              <div className="space-y-2 overflow-y-auto max-h-[450px] pr-1">
+              <div className="space-y-2.5 overflow-y-auto max-h-[450px] pr-1">
                 {doneTasks.map((t) => (
                   <div
                     key={t.id}
                     onClick={() => setSelectedTask(t)}
-                    className={`p-3 rounded-xl border text-left cursor-pointer transition-all duration-300 ${
+                    className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all duration-300 ${
                       selectedTask?.id === t.id 
-                        ? 'bg-blue-600/10 border-blue-500/30' 
-                        : 'bg-white/[0.01] border-white/5 hover:border-white/10 hover:bg-white/[0.02]'
+                        ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/10 border-blue-500/40 shadow-sm font-semibold' 
+                        : 'bg-white/[0.02] border-white/[0.06] hover:border-white/20 hover:bg-white/[0.04]'
                     }`}
                   >
                     <span className="text-xs font-bold text-white block truncate">{t.title}</span>
-                    <span className="text-[8px] uppercase tracking-wider text-gray-500 font-bold mt-2 block truncate">{t.contract?.title || 'Global Context'}</span>
+                    <span className="text-[8px] uppercase tracking-wider text-gray-400 font-bold mt-2 block truncate">{t.contract?.title || 'Global Context'}</span>
                   </div>
                 ))}
               </div>
             </div>
 
           </div>
+
 
           {/* Right Column: Detailed inspect sidebar */}
           <div className="xl:col-span-1">

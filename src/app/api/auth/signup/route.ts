@@ -19,16 +19,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User already exists' }, { status: 400 });
     }
 
-    // Create organization
-    const organization = await prisma.organization.create({
-      data: { name: organizationName },
+    const trimmedOrgName = organizationName.trim();
+
+    // Check if organization already exists (case-insensitive)
+    let organization = await prisma.organization.findFirst({
+      where: {
+        name: {
+          equals: trimmedOrgName,
+          mode: 'insensitive',
+        },
+      },
     });
+
+    let isNewOrg = false;
+    if (!organization) {
+      organization = await prisma.organization.create({
+        data: { name: trimmedOrgName },
+      });
+      isNewOrg = true;
+    }
 
     // Hash password
     const hashedPassword = hashPassword(password);
 
-    // Determine role (default to ADMIN for first organization creator)
-    const userRole = role || 'ADMIN';
+    // Determine role (ADMIN for creator of new org, ASSOCIATE for joining existing org)
+    const userRole = isNewOrg ? (role || 'ADMIN') : (role && role !== 'ADMIN' ? role : 'ASSOCIATE');
 
     // Create user
     const user = await prisma.user.create({
@@ -46,7 +61,9 @@ export async function POST(req: NextRequest) {
       data: {
         userId: user.id,
         action: 'SIGNUP',
-        details: `User registered and organization '${organizationName}' created.`,
+        details: isNewOrg
+          ? `User registered and created new organization '${trimmedOrgName}'.`
+          : `User registered and joined existing organization '${trimmedOrgName}'.`,
       },
     });
 

@@ -65,17 +65,23 @@ export default function TeamsPage() {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="space-y-8 animate-fade-in relative">
+      {/* Ambient Radial Blur */}
+      <div className="absolute top-0 right-1/3 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Header Banner */}
+      <div className="spatial-card rounded-2xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
         <div>
-          <h1 className="font-display text-3xl font-extrabold text-white">Teams & Members</h1>
-          <p className="text-sm text-gray-400">Manage user authorization groups, tenant seats, and role permission settings.</p>
+          <h1 className="font-display text-3xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
+            Teams & Members <Users className="w-5 h-5 text-blue-400" />
+          </h1>
+          <p className="text-sm text-gray-300 font-light mt-1">Manage user authorization groups, tenant seats, and role permission settings across your firm.</p>
         </div>
 
         <button
           onClick={() => setInviteOpen(true)}
-          className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl flex items-center gap-2 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/25 transition-all cursor-pointer hover:scale-[1.02]"
+          className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl flex items-center gap-2 shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all cursor-pointer hover:scale-[1.02]"
         >
           <UserPlus className="w-4 h-4" /> Add Lawyer Member
         </button>
@@ -85,37 +91,37 @@ export default function TeamsPage() {
       {loading ? (
         <div className="flex flex-col items-center justify-center min-h-[40vh] text-gray-500 space-y-4">
           <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-          <span className="text-xs uppercase tracking-widest font-bold">Querying firm hierarchy...</span>
+          <span className="text-xs uppercase tracking-widest font-bold text-blue-400">Querying firm hierarchy...</span>
         </div>
       ) : members.length === 0 ? (
-        <div className="text-center py-20 text-gray-500 space-y-3">
-          <div className="h-12 w-12 rounded-xl bg-white/[0.01] border border-white/5 flex items-center justify-center text-gray-500 mx-auto">
-            <Users className="w-6 h-6" />
+        <div className="spatial-card rounded-2xl p-16 text-center text-gray-400 space-y-3 max-w-md mx-auto">
+          <div className="h-14 w-14 rounded-2xl bg-gradient-to-tr from-blue-600/20 to-indigo-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 mx-auto shadow-md">
+            <Users className="w-7 h-7" />
           </div>
-          <h4 className="text-base font-bold text-white font-display">No Team Members Found</h4>
-          <p className="text-xs text-gray-400 font-light">Invite colleagues to collaborate on auditing NDAs and contracts.</p>
+          <h4 className="text-lg font-extrabold text-white font-display">No Team Members Found</h4>
+          <p className="text-xs text-gray-300 font-light">Invite colleagues to collaborate on auditing NDAs and contracts.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {members.map((member) => (
-            <div key={member.id} className="glass-card rounded-2xl p-6 space-y-4">
+            <div key={member.id} className="spatial-card rounded-2xl p-6 space-y-4 relative overflow-hidden shadow-[0_15px_30px_rgba(0,0,0,0.4)]">
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-600/20 to-indigo-600/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-bold font-display text-sm shadow-sm">
+                  <div className="h-11 w-11 rounded-2xl bg-gradient-to-tr from-blue-600/30 to-indigo-600/20 border border-blue-500/30 flex items-center justify-center text-blue-300 font-extrabold font-display text-base shadow-md">
                     {member.name.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-white leading-tight font-display">{member.name}</h3>
-                    <span className="text-[9px] text-gray-500 font-mono flex items-center gap-1 mt-1">
-                      <Mail className="w-3 h-3 text-gray-600" /> {member.email}
+                    <h3 className="text-sm font-extrabold text-white leading-tight font-display">{member.name}</h3>
+                    <span className="text-[10px] text-gray-400 font-mono flex items-center gap-1.5 mt-1 font-medium">
+                      <Mail className="w-3 h-3 text-blue-400" /> {member.email}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-between items-center pt-4 border-t border-white/5 text-[9px] text-gray-500 font-mono">
-                <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> {new Date(member.createdAt).toLocaleDateString()}</span>
-                <span className="px-2.5 py-0.5 rounded text-[8px] bg-blue-500/10 text-blue-400 border border-blue-500/20 font-bold uppercase tracking-wider">
+              <div className="flex justify-between items-center pt-4 border-t border-white/[0.06] text-[9px] text-gray-400 font-mono">
+                <span className="flex items-center gap-1.5 font-bold"><Calendar className="w-3.5 h-3.5 text-gray-500" /> {new Date(member.createdAt).toLocaleDateString()}</span>
+                <span className="px-2.5 py-1 rounded-md text-[8px] bg-blue-500/10 text-blue-300 border border-blue-500/20 font-extrabold uppercase tracking-wider">
                   {member.role.replace('_', ' ')}
                 </span>
               </div>
@@ -123,6 +129,7 @@ export default function TeamsPage() {
           ))}
         </div>
       )}
+
 
       {/* ADD MEMBER MODAL */}
       {inviteOpen && (
