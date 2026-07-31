@@ -212,39 +212,44 @@ function ChatContent() {
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 min-h-[80vh] items-stretch animate-fade-in">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 min-h-[80vh] items-stretch animate-fade-in relative">
+      {/* Ambient Radial Blur */}
+      <div className="absolute top-0 left-1/3 w-[30vw] h-[30vw] bg-indigo-600/10 rounded-full blur-[110px] pointer-events-none" />
+
       {/* Sidebar Panel: Conversation History */}
-      <div className="lg:col-span-1 glass-card rounded-2xl p-4 flex flex-col justify-between min-h-[350px]">
+      <div className="lg:col-span-1 spatial-card rounded-2xl p-5 flex flex-col justify-between min-h-[350px]">
         <div>
           <button
             onClick={handleStartNewChat}
-            className="w-full py-2.5 bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/15 text-blue-400 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer mb-4 hover:scale-[1.02]"
+            className="w-full py-3 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 hover:from-blue-600/30 hover:to-indigo-600/30 border border-blue-500/30 text-blue-300 text-xs font-bold uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer mb-5 shadow-[0_0_15px_rgba(59,130,246,0.15)] hover:scale-[1.02]"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 text-blue-400" />
             New Discussion
           </button>
 
-          <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3 px-2">Discussion Threads</h3>
+          <h3 className="text-[10px] font-extrabold text-gray-400 uppercase tracking-[0.15em] mb-3 px-2 border-b border-white/[0.06] pb-2">
+            Discussion Threads
+          </h3>
           
           {loadingConv ? (
             <div className="text-center py-6 text-xs text-gray-500 flex items-center justify-center gap-2">
               <Loader2 className="w-4 h-4 animate-spin text-blue-500" /> Loading threads...
             </div>
           ) : conversations.length === 0 ? (
-            <p className="text-xs text-gray-600 text-center py-6">No previous discussions.</p>
+            <p className="text-xs text-gray-500 text-center py-6">No previous discussions.</p>
           ) : (
-            <div className="space-y-1 overflow-y-auto max-h-[350px] pr-1">
+            <div className="space-y-1.5 overflow-y-auto max-h-[350px] pr-1">
               {conversations.map((conv) => (
                 <div
                   key={conv.id}
                   onClick={() => handleSelectConversation(conv)}
-                  className={`p-2.5 rounded-xl cursor-pointer text-left text-xs truncate transition flex items-center gap-2 ${
+                  className={`p-3 rounded-xl cursor-pointer text-left text-xs truncate transition flex items-center gap-2.5 ${
                     activeConversation?.id === conv.id
-                      ? 'bg-blue-600/10 border border-blue-500/15 text-blue-400 font-semibold'
-                      : 'hover:bg-white/[0.02] border border-transparent text-gray-400 hover:text-white'
+                      ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/10 border border-blue-500/30 text-blue-300 font-bold shadow-sm'
+                      : 'hover:bg-white/[0.04] border border-transparent text-gray-400 hover:text-white'
                   }`}
                 >
-                  <MessageSquare className="w-3.5 h-3.5 shrink-0" />
+                  <MessageSquare className={`w-3.5 h-3.5 shrink-0 ${activeConversation?.id === conv.id ? 'text-blue-400' : 'text-gray-500'}`} />
                   <span className="truncate">{conv.title}</span>
                 </div>
               ))}
@@ -253,12 +258,12 @@ function ChatContent() {
         </div>
 
         {/* Mapped Contract Context */}
-        <div className="border-t border-white/5 pt-4 mt-4">
-          <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block mb-2 px-1">Attached Context</label>
+        <div className="border-t border-white/[0.08] pt-4 mt-4">
+          <label className="text-[9px] font-extrabold text-blue-300/80 uppercase tracking-[0.15em] block mb-2 px-1">Attached Context</label>
           <select
             value={selectedContractId}
             onChange={(e) => setSelectedContractId(e.target.value)}
-            className="w-full px-2.5 py-2 text-xs rounded-xl bg-white/[0.03] border border-white/10 text-white outline-none cursor-pointer hover:border-white/20 transition-colors"
+            className="w-full px-3 py-2.5 text-xs rounded-xl bg-white/[0.03] border border-white/10 text-white outline-none cursor-pointer hover:border-blue-500/40 transition-colors font-medium"
           >
             <option value="" className="bg-[#090d16]">Global Workspace Context</option>
             {contracts.map((c) => (
@@ -271,25 +276,37 @@ function ChatContent() {
       </div>
 
       {/* Main Chat Feed */}
-      <div className="lg:col-span-3 glass-panel rounded-2xl border-white/5 flex flex-col justify-between min-h-[500px]">
+      <div className="lg:col-span-3 spatial-card rounded-2xl flex flex-col justify-between min-h-[520px] relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+        {/* Top Light Rim Line */}
+        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
+
         {/* Chat Feed Header */}
-        <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-xl bg-blue-600/10 border border-blue-500/15 flex items-center justify-center text-blue-400">
-              <Bot className="w-4.5 h-4.5" />
+        <div className="px-6 py-4 border-b border-white/[0.08] flex justify-between items-center bg-white/[0.02]">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-blue-600/20 to-indigo-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-md">
+              <Bot className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-widest text-white leading-none">LegalQA AI</h3>
-              <span className="text-[9px] text-gray-500 uppercase tracking-widest font-semibold block mt-0.5">Autonomous RAG Agent</span>
+              <h3 className="text-xs font-extrabold uppercase tracking-[0.15em] text-white leading-none flex items-center gap-1.5">
+                LegalQA AI <Sparkles className="w-3 h-3 text-blue-400 animate-pulse" />
+              </h3>
+              <span className="text-[9px] text-blue-300/80 uppercase tracking-[0.15em] font-bold block mt-1">Autonomous RAG Agent Engine</span>
             </div>
           </div>
 
           {/* Model info banner */}
-          <div className="flex items-center gap-4 text-[9px] text-gray-500 font-mono">
-            <span className="flex items-center gap-1"><Cpu className="w-3.5 h-3.5 text-gray-500" /> {model}</span>
-            {latency && <span className="flex items-center gap-1"><Zap className="w-3.5 h-3.5 text-yellow-500" /> {latency}ms</span>}
+          <div className="flex items-center gap-3 text-[9px] font-mono">
+            <span className="px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-gray-300 flex items-center gap-1.5 font-bold">
+              <Cpu className="w-3.5 h-3.5 text-blue-400" /> {model}
+            </span>
+            {latency && (
+              <span className="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 flex items-center gap-1 font-bold">
+                <Zap className="w-3.5 h-3.5 text-amber-400" /> {latency}ms
+              </span>
+            )}
           </div>
         </div>
+
 
         {/* Message history */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6 max-h-[50vh] min-h-[300px]">

@@ -69,24 +69,30 @@ export default function ComparePage() {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* Title */}
-      <div>
-        <h1 className="font-display text-3xl font-extrabold text-white">Clause Comparison Engine</h1>
-        <p className="text-sm text-gray-400">Perform side-by-side audits, mapping difference vectors and risk directions.</p>
+    <div className="space-y-8 animate-fade-in relative">
+      {/* Ambient Radial Blur */}
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Header Banner */}
+      <div className="spatial-card rounded-2xl p-6 relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
+        <h1 className="font-display text-3xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
+          Clause Comparison Engine <Sparkles className="w-5 h-5 text-blue-400 animate-pulse" />
+        </h1>
+        <p className="text-sm text-gray-300 font-light mt-1">Perform side-by-side audits, mapping difference vectors and risk directions across contract revisions.</p>
       </div>
 
       {loadingList ? (
         <div className="flex flex-col items-center justify-center min-h-[40vh] text-gray-500 space-y-4">
           <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-          <span className="text-[10px] uppercase tracking-widest font-bold">Accessing active audits...</span>
+          <span className="text-[10px] uppercase tracking-widest font-bold text-blue-400">Accessing active audits...</span>
         </div>
       ) : contracts.length < 2 ? (
-        <div className="glass-panel border-white/5 rounded-2xl p-12 text-center text-gray-500 space-y-4 max-w-lg mx-auto">
-          <GitCompare className="w-12 h-12 text-blue-500 mx-auto" />
-          <h3 className="text-lg font-bold text-white font-display">Multiple Audits Required</h3>
+        <div className="spatial-card rounded-2xl p-12 text-center text-gray-400 space-y-4 max-w-lg mx-auto">
+          <GitCompare className="w-12 h-12 text-blue-400 mx-auto animate-pulse" />
+          <h3 className="text-xl font-extrabold text-white font-display">Multiple Audits Required</h3>
           <p className="text-xs leading-relaxed max-w-sm mx-auto font-light">
-            You need to upload and analyze at least two different agreements to compare them side-by-side. Currently, you have {contracts.length} analyzed documents.
+            You need to upload and analyze at least two different agreements to compare them side-by-side. Currently, you have {contracts.length} analyzed document{contracts.length === 1 ? '' : 's'}.
           </p>
         </div>
       ) : (
@@ -95,11 +101,11 @@ export default function ComparePage() {
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
             {/* Source */}
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block px-1">Contract A (Reference Source)</label>
+              <label className="text-[9px] font-extrabold text-blue-300 uppercase tracking-[0.15em] block px-1">Contract A (Reference Source)</label>
               <select
                 value={sourceId}
                 onChange={(e) => setSourceId(e.target.value)}
-                className="w-full px-3 py-3 text-xs font-semibold rounded-xl bg-white/[0.03] border border-white/10 text-white outline-none cursor-pointer hover:border-white/20 transition-colors"
+                className="w-full px-3.5 py-3 text-xs font-bold rounded-xl bg-white/[0.04] border border-white/10 text-white outline-none cursor-pointer hover:border-blue-500/40 transition-colors shadow-sm"
               >
                 {contracts.map((c) => (
                   <option key={c.id} value={c.id} className="bg-[#090d16]">
@@ -111,18 +117,18 @@ export default function ComparePage() {
 
             {/* Icon */}
             <div className="md:col-span-1 flex justify-center pt-4">
-              <div className="h-10 w-10 rounded-full bg-white/[0.01] border border-white/5 flex items-center justify-center text-gray-500">
-                <ArrowRight className="w-4 h-4 text-gray-400" />
+              <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-blue-600/20 to-indigo-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 shadow-md">
+                <ArrowRight className="w-4 h-4 text-blue-400" />
               </div>
             </div>
 
             {/* Target */}
             <div className="md:col-span-2 space-y-2">
-              <label className="text-[9px] font-bold text-gray-500 uppercase tracking-widest block px-1">Contract B (Proposed Target)</label>
+              <label className="text-[9px] font-extrabold text-indigo-300 uppercase tracking-[0.15em] block px-1">Contract B (Proposed Target)</label>
               <select
                 value={targetId}
                 onChange={(e) => setTargetId(e.target.value)}
-                className="w-full px-3 py-3 text-xs font-semibold rounded-xl bg-white/[0.03] border border-white/10 text-white outline-none cursor-pointer hover:border-white/20 transition-colors"
+                className="w-full px-3.5 py-3 text-xs font-bold rounded-xl bg-white/[0.04] border border-white/10 text-white outline-none cursor-pointer hover:border-indigo-500/40 transition-colors shadow-sm"
               >
                 {contracts.map((c) => (
                   <option key={c.id} value={c.id} className="bg-[#090d16]">
@@ -137,7 +143,7 @@ export default function ComparePage() {
           <button
             onClick={handleCompare}
             disabled={comparing}
-            className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold uppercase tracking-widest rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10 hover:shadow-blue-500/25 transition-all duration-300 cursor-pointer hover:scale-[1.01]"
+            className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold uppercase tracking-[0.15em] rounded-xl flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:shadow-[0_0_40px_rgba(59,130,246,0.45)] transition-all duration-300 cursor-pointer hover:scale-[1.01]"
           >
             {comparing ? (
               <>
@@ -151,6 +157,7 @@ export default function ComparePage() {
               </>
             )}
           </button>
+
 
           {/* Skeletons while comparing */}
           {comparing && (
