@@ -1,5 +1,9 @@
 # LegalQA: Legal Intelligence Operating System
 
+<p align="center">
+  <img src="./public/dashboard-preview.png" alt="LegalQA Dashboard Preview" width="100%" />
+</p>
+
 **LegalQA** is a premium, enterprise-grade AI-powered Legal Intelligence Operating System designed for law firms and compliance teams. It features sub-second contract audits, semantic vector chat, contract comparisons, and automated compliance risk assessments.
 
 ---
@@ -7,6 +11,7 @@
 ## Key Features
 
 - **Ingestion Pipeline**: Automated layout reconstruction for PDF/DOCX using LlamaParse Agentic Tier.
+- **AI-Powered RAG Engine**: Intelligent Retrieval-Augmented Generation (RAG) pipeline with document chunking, vector embeddings, semantic retrieval, and contextual reasoning for highly accurate legal question answering.
 - **Obligations Audit**: Extraction of payment terms, termination clauses, IP scope, and liability caps.
 - **Risk Assessment**: Color-coded risk scoring (Low, Medium, High) with suggested alternative clauses.
 - **Vector Chat**: Streamed response interface featuring semantic matching and page-level citations.
@@ -40,32 +45,21 @@ LegalQA/
 
 ---
 
-## Getting Started
+## Tech Stack
 
-### 1. Environment Variables Setup
-Copy the template and fill in your API credentials:
-```bash
-cp .env.example .env
-```
+| Category | Technologies |
+|----------|--------------|
+| Frontend | Next.js 15, React 19, TypeScript |
+| Styling | Tailwind CSS, Shadcn UI, Framer Motion |
+| Backend | Next.js API Routes |
+| Database | PostgreSQL, Prisma ORM |
+| AI | Groq Cloud API, LlamaParse |
+| Authentication | Better Auth |
+| Validation | Zod |
+| State | Zustand |
+| Charts | Recharts |
+| Deployment | Vercel |
 
-### 2. Install Dependencies
-```bash
-npm install
-```
-
-### 3. Sync the Database
-```bash
-npx prisma db push
-```
-
-### 4. Run Development Server
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to view the application.
-
----
 
 ## Documentation Index
 
@@ -80,4 +74,4 @@ For detailed instructions and design details, see:
 
 ## License
 
-This project is licensed under the [MIT License](file:///d:/Nidhi/LegalQA/LegalQA/LICENSE).
+* This project is licensed under the [MIT License](file:///d:/Nidhi/LegalQA/LegalQA/LICENSE). *
