@@ -25,14 +25,16 @@ function RisksContent() {
       .then((res) => res.json())
       .then((data) => {
         const list = data.contracts || [];
-        const analyzed = list.filter((c: any) => c.status !== 'PENDING_REVIEW');
-        setContracts(analyzed);
+        const analyzed = list.filter((c: any) => c.status !== 'PENDING_REVIEW' || c.auditStatus === 'AUDITED' || c.analysisStatus === 'COMPLETED' || c._count?.risks > 0);
+        setContracts(analyzed.length > 0 ? analyzed : list);
         setLoadingList(false);
 
         if (paramContractId) {
           setSelectedContractId(paramContractId);
         } else if (analyzed.length > 0) {
           setSelectedContractId(analyzed[0].id);
+        } else if (list.length > 0) {
+          setSelectedContractId(list[0].id);
         }
       })
       .catch((err) => {

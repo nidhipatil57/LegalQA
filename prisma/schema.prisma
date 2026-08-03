@@ -121,8 +121,19 @@ model Contract {
   organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   userId         String
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  folderId       String?
+  isFavorite     Boolean         @default(false)
+  isArchived     Boolean         @default(false)
+  isTrash        Boolean         @default(false)
+  documentStatus   String          @default("Draft") // "Draft" | "Reviewed" | "Signed" | "Archived"
+  tags             String[]        @default([])
+  analysisStatus   String          @default("COMPLETED")
+  progress         Int             @default(100)
+  lastAnalysisDate DateTime?
+  auditStatus      String          @default("AUDITED")
+  processingLogs   Json?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
   analysis       ContractAnalysis?
   chunks         DocumentChunk[]
   risks          Risk[]
@@ -310,3 +321,11 @@ model ApiKey {
   organizationId String
   createdAt      DateTime     @default(now())
 }
+
+
+
+
+
+
+
+
