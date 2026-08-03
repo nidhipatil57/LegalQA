@@ -6,8 +6,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, FileText, MessageSquare, AlertTriangle, GitCompare,
   BookOpen, BarChart3, Users, CheckSquare, Settings, Search, Bell,
-  Plus, LogOut, Command, ShieldCheck, User, X, ChevronDown, Sparkles
+  Plus, LogOut, Command, ShieldCheck, User, X, ChevronDown, Sparkles, Network, FileBox
 } from 'lucide-react';
+import GlobalLegalCopilot from '@/components/ai/GlobalLegalCopilot';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -135,7 +136,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="absolute bottom-0 right-1/4 w-[35vw] h-[35vw] rounded-full bg-indigo-600/5 blur-[120px] pointer-events-none" />
 
       {/* Sidebar Panel (Floating glass box) */}
-      <aside className="w-56 glass-panel rounded-2xl flex flex-col justify-between shrink-0 p-3.5 select-none relative z-20 border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+      <aside className="w-[260px] glass-panel rounded-2xl flex flex-col justify-between shrink-0 p-3.5 select-none relative z-20 border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
 
         <div>
           {/* Logo / Org Selector */}
@@ -172,15 +173,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                           : 'text-gray-400 hover:text-white hover:bg-white/[0.03] border border-transparent'
                       }`}
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
                         {isActive && (
                           <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-blue-500 shadow-[0_0_10px_#3b82f6]" />
                         )}
-                        <Icon className={`w-4 h-4 ${isActive ? 'text-blue-400' : 'text-gray-400 group-hover:text-white'}`} />
-                        <span>{item.name}</span>
+                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-blue-400' : 'text-gray-400 group-hover:text-white'}`} />
+                        <span className="whitespace-nowrap">{item.name}</span>
                       </div>
                       {item.badge && (
-                        <span className={`text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-md border ${
+                        <span className={`text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-md border shrink-0 whitespace-nowrap ml-2 ${
                           isActive
                             ? 'bg-blue-500/20 text-blue-300 border-blue-400/30'
                             : 'bg-white/5 text-gray-400 border-white/5'
@@ -314,6 +315,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {children}
           </div>
         </main>
+        <GlobalLegalCopilot />
       </div>
 
       {/* COMMAND PALETTE MODAL (Frosted glass overlay) */}

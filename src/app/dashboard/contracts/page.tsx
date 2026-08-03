@@ -41,13 +41,10 @@ function ContractsContent() {
         setContracts(list);
         setLoadingList(false);
 
-        // Select contract automatically if parameter or first item is present
-        const selectId = selectIdAfter || paramId;
-        if (selectId) {
-          const match = list.find((c: any) => c.id === selectId);
-          if (match) {
-            handleSelectContract(match.id);
-          }
+        if (selectIdAfter) {
+          router.replace(`/dashboard/contracts?id=${selectIdAfter}`);
+        } else if (!paramId && list.length > 0) {
+          router.replace(`/dashboard/contracts?id=${list[0].id}`);
         }
       })
       .catch((err) => {
@@ -58,22 +55,38 @@ function ContractsContent() {
 
   useEffect(() => {
     fetchContracts();
-  }, [paramId]);
+  }, []);
 
-  const handleSelectContract = (id: string) => {
+  // Sync selected contract details when paramId changes
+  useEffect(() => {
+    if (!paramId) {
+      setSelectedContract(null);
+      setLoadingDetail(false);
+      return;
+    }
+
     setLoadingDetail(true);
-    router.replace(`/dashboard/contracts?id=${id}`);
-    
-    fetch(`/api/contracts/${id}`)
+    fetch(`/api/contracts/${paramId}`)
       .then((res) => res.json())
       .then((data) => {
-        setSelectedContract(data.contract);
-        setLoadingDetail(false);
+        if (data.contract) {
+          setSelectedContract(data.contract);
+        } else {
+          setSelectedContract(null);
+        }
       })
       .catch((err) => {
         console.error('Failed to load contract details:', err);
+        setSelectedContract(null);
+      })
+      .finally(() => {
         setLoadingDetail(false);
       });
+  }, [paramId]);
+
+  const handleSelectContract = (id: string) => {
+    if (paramId === id) return;
+    router.replace(`/dashboard/contracts?id=${id}`);
   };
 
   // Upload file logic
@@ -117,7 +130,8 @@ function ContractsContent() {
       setSelectedContract(data.contract);
       fetchContracts(selectedContract.id);
     } catch (error) {
-      alert(error instanceof Error ? error.message : 'Error analyzing contract');
+      console.error('Contract analysis error:', error);
+      alert('Analysis encountered an issue. Please try running the audit again.');
     } finally {
       setAnalyzing(false);
     }
