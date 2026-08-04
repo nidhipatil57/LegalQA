@@ -178,6 +178,10 @@ function ContractsContent() {
   };
 
   return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in flex-1 min-h-0">
+      
+      {/* Left Column: Upload box and Contract List */}
+      <div className="lg:col-span-1 space-y-6 flex flex-col flex-1 min-h-0">
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 min-h-[80vh] items-stretch animate-fade-in relative">
       {/* Ambient Radial Blur */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] pointer-events-none" />
@@ -192,6 +196,7 @@ function ContractsContent() {
           onDragLeave={handleDrag}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
+          className={`border border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all duration-300 relative overflow-hidden shrink-0 ${
           className={`spatial-card rounded-2xl p-6 text-center cursor-pointer transition-all duration-300 relative overflow-hidden group border-dashed ${
             dragActive 
               ? 'border-blue-500 bg-blue-500/10 shadow-[0_0_25px_rgba(59,130,246,0.2)] scale-[1.01]' 
@@ -223,6 +228,8 @@ function ContractsContent() {
         </div>
 
         {/* Contract list container */}
+        <div className="glass-card rounded-2xl p-6 flex-1 flex flex-col min-h-0">
+          <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-4 flex items-center gap-2 shrink-0">
         <div className="spatial-card rounded-2xl p-6 flex-1 flex flex-col min-h-[400px]">
           <h3 className="text-xs font-extrabold text-white uppercase tracking-[0.15em] mb-4 flex items-center gap-2 border-b border-white/[0.06] pb-3">
             <FolderOpen className="w-4 h-4 text-blue-400" />
@@ -240,6 +247,7 @@ function ContractsContent() {
               <p className="text-xs font-semibold text-gray-400">No agreements found in organization.</p>
             </div>
           ) : (
+            <div className="space-y-2 flex-1 overflow-y-auto pr-2">
             <div className="space-y-2.5 overflow-y-auto max-h-[500px] pr-1">
               {contracts.map((c) => (
                 <div
@@ -278,6 +286,7 @@ function ContractsContent() {
       </div>
 
       {/* Right Column: Detailed analysis panel */}
+      <div className="lg:col-span-2 flex flex-col flex-1 min-h-0">
       <div className="lg:col-span-8 flex flex-col">
         {loadingDetail ? (
           <div className="spatial-card rounded-2xl p-8 flex-1 flex flex-col items-center justify-center text-gray-500 text-xs gap-3">

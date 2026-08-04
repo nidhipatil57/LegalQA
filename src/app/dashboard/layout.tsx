@@ -127,6 +127,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   ];
 
   return (
+    <div className="relative text-gray-100 flex font-sans p-4 gap-4 overflow-hidden h-screen bg-[#030712]">
     <div className="relative min-h-screen text-gray-100 flex font-sans p-2.5 gap-3 overflow-hidden h-screen bg-[#030712]">
       {/* Background layer */}
       <div className="os-background" />
@@ -310,6 +311,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </header>
 
         {/* Content Wrapper */}
+        <main className="flex-1 overflow-y-auto p-6 relative flex flex-col">
+          <div className="w-full flex-1 flex flex-col">
         <main className="flex-1 overflow-y-auto p-5 sm:p-6 relative">
           <div className="max-w-[1600px] mx-auto space-y-6">
             {children}

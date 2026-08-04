@@ -271,6 +271,7 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+          <div className="h-80 w-full">
 
           <div className="h-72 w-full pt-2">
             <ResponsiveContainer width="100%" height="100%">
@@ -303,6 +304,7 @@ export default function DashboardPage() {
             </h3>
             <p className="text-[11px] text-gray-400 font-light mt-0.5">Automated clause liability distribution</p>
           </div>
+          <div className="h-80 w-full flex items-center justify-center">
 
           <div className="h-64 w-full relative flex items-center justify-center">
             {/* Centered Donut Value */}
@@ -317,6 +319,8 @@ export default function DashboardPage() {
                   data={charts.riskDistribution}
                   cx="50%"
                   cy="50%"
+                  innerRadius={70}
+                  outerRadius={95}
                   innerRadius={65}
                   outerRadius={88}
                   paddingAngle={6}
@@ -348,6 +352,11 @@ export default function DashboardPage() {
       {/* 4. Activities Timeline and Quick Access Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Timeline Log */}
+        <div className="glass-card rounded-2xl p-6 md:col-span-2 space-y-6 flex flex-col justify-between">
+          <h3 className="text-xs font-bold text-white uppercase tracking-widest">Recent Activity Timeline</h3>
+          <div className="relative pl-6 space-y-6 min-h-[280px] max-h-[420px] overflow-y-auto pr-2 flex-1">
+            {/* Timeline Vertical Line */}
+            <div className="absolute left-[11px] top-2 bottom-2 w-[1px] bg-gradient-to-b from-blue-500 via-indigo-500/40 to-transparent" />
         <div className="spatial-card rounded-2xl p-6 lg:col-span-2 space-y-6 relative overflow-hidden">
           <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
             <h3 className="text-xs font-extrabold text-white uppercase tracking-[0.15em] flex items-center gap-2">
@@ -389,6 +398,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Launch Panel */}
+        <div className="glass-panel border-blue-500/10 rounded-2xl p-6 flex flex-col justify-between min-h-[340px]">
         <div className="spatial-card rounded-2xl p-6 flex flex-col justify-between border-blue-500/20 shadow-[0_15px_40px_rgba(59,130,246,0.15)] relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 rounded-full blur-2xl pointer-events-none" />
 
