@@ -157,7 +157,7 @@ export default function DashboardPage() {
             </h3>
             <span className="text-[10px] font-semibold text-gray-500 tracking-wider">6-Month Ingestion Trend</span>
           </div>
-          <div className="h-72 w-full">
+          <div className="h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={charts.monthlyUploads} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
@@ -187,15 +187,15 @@ export default function DashboardPage() {
               Risk Severity Profile
             </h3>
           </div>
-          <div className="h-72 w-full flex items-center justify-center">
+          <div className="h-80 w-full flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={charts.riskDistribution}
                   cx="50%"
                   cy="50%"
-                  innerRadius={65}
-                  outerRadius={85}
+                  innerRadius={70}
+                  outerRadius={95}
                   paddingAngle={6}
                   dataKey="value"
                 >
@@ -216,9 +216,9 @@ export default function DashboardPage() {
       {/* 4. Activities Timeline and Quick Access Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Timeline Log */}
-        <div className="glass-card rounded-2xl p-6 md:col-span-2 space-y-6">
+        <div className="glass-card rounded-2xl p-6 md:col-span-2 space-y-6 flex flex-col justify-between">
           <h3 className="text-xs font-bold text-white uppercase tracking-widest">Recent Activity Timeline</h3>
-          <div className="relative pl-6 space-y-6 max-h-[350px] overflow-y-auto pr-2">
+          <div className="relative pl-6 space-y-6 min-h-[280px] max-h-[420px] overflow-y-auto pr-2 flex-1">
             {/* Timeline Vertical Line */}
             <div className="absolute left-[11px] top-2 bottom-2 w-[1px] bg-gradient-to-b from-blue-500 via-indigo-500/40 to-transparent" />
 
@@ -247,7 +247,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Launch Panel */}
-        <div className="glass-panel border-blue-500/10 rounded-2xl p-6 flex flex-col justify-between min-h-[300px]">
+        <div className="glass-panel border-blue-500/10 rounded-2xl p-6 flex flex-col justify-between min-h-[340px]">
           <div>
             <div className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-2">OS Quick Launch</div>
             <h3 className="text-2xl font-bold text-white font-display mb-4">Execute AI Auditing</h3>

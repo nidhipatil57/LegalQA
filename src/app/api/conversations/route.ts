@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getAuthenticatedUser, authResponseError } from '@/lib/api-auth';
+import { getAuthenticatedUserAsync, authResponseError } from '@/lib/api-auth';
 
 export async function GET(req: NextRequest) {
-  const user = getAuthenticatedUser(req);
+  const user = await getAuthenticatedUserAsync(req);
   if (!user) return authResponseError();
 
   try {

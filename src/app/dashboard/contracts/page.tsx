@@ -164,10 +164,10 @@ function ContractsContent() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 min-h-[80vh] items-stretch animate-fade-in">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in flex-1 min-h-0">
       
-      {/* Left Column: Upload panel and Contract listing */}
-      <div className="lg:col-span-1 space-y-6 flex flex-col">
+      {/* Left Column: Upload box and Contract List */}
+      <div className="lg:col-span-1 space-y-6 flex flex-col flex-1 min-h-0">
         
         {/* Upload box */}
         <div
@@ -176,7 +176,7 @@ function ContractsContent() {
           onDragLeave={handleDrag}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`border border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all duration-300 relative overflow-hidden ${
+          className={`border border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all duration-300 relative overflow-hidden shrink-0 ${
             dragActive 
               ? 'border-blue-500 bg-blue-500/5 shadow-[0_0_15px_rgba(59,130,246,0.1)]' 
               : 'border-white/10 hover:border-white/20 bg-white/[0.01] hover:bg-white/[0.03] shadow-md'
@@ -206,8 +206,8 @@ function ContractsContent() {
         </div>
 
         {/* Contract list container */}
-        <div className="glass-card rounded-2xl p-6 flex-1 flex flex-col min-h-[400px]">
-          <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-4 flex items-center gap-2">
+        <div className="glass-card rounded-2xl p-6 flex-1 flex flex-col min-h-0">
+          <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-4 flex items-center gap-2 shrink-0">
             <FolderOpen className="w-4 h-4 text-blue-400" />
             Uploaded Agreements
           </h3>
@@ -223,7 +223,7 @@ function ContractsContent() {
               <p className="text-xs font-semibold">No agreements found in organization.</p>
             </div>
           ) : (
-            <div className="space-y-2 overflow-y-auto max-h-[500px] pr-2">
+            <div className="space-y-2 flex-1 overflow-y-auto pr-2">
               {contracts.map((c) => (
                 <div
                   key={c.id}
@@ -261,7 +261,7 @@ function ContractsContent() {
       </div>
 
       {/* Right Column: Detailed analysis panel */}
-      <div className="lg:col-span-2 flex flex-col">
+      <div className="lg:col-span-2 flex flex-col flex-1 min-h-0">
         {loadingDetail ? (
           <div className="glass-card rounded-2xl p-8 flex-1 flex flex-col items-center justify-center text-gray-500 text-xs gap-3">
             <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
