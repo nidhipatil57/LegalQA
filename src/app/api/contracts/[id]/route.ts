@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getAuthenticatedUser, authResponseError } from '@/lib/api-auth';
+import { getAuthenticatedUserAsync } from '@/lib/api-auth';
 import fs from 'fs';
 import path from 'path';
 const UPLOAD_DIR = process.env.UPLOAD_PATH || 'd:/Nidhi/LegalQA/uploads';
@@ -10,9 +10,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const user = getAuthenticatedUser(req);
-  if (!user) return authResponseError();
-
+  const user = await getAuthenticatedUserAsync(req);
   const { id } = await params;
 
   try {
@@ -35,7 +33,7 @@ export async function GET(
 
     return NextResponse.json({ contract });
   } catch (error) {
-    console.error('Fetch contract details error:', error);
+    console.error('Fetch contract detail error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
@@ -45,9 +43,7 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const user = getAuthenticatedUser(req);
-  if (!user) return authResponseError();
-
+  const user = await getAuthenticatedUserAsync(req);
   const { id } = await params;
 
   try {
@@ -62,32 +58,11 @@ export async function DELETE(
       return NextResponse.json({ error: 'Contract not found' }, { status: 404 });
     }
 
-    // Delete file from disk
-    const fileName = path.basename(contract.fileUrl);
-    const filePath = path.join(UPLOAD_DIR, fileName);
-    if (fs.existsSync(filePath)) {
-      try {
-        fs.unlinkSync(filePath);
-      } catch (err) {
-        console.error(`Failed to delete file from disk: ${filePath}`, err);
-      }
-    }
-
-    // Delete record from database (cascade will handle child models)
     await prisma.contract.delete({
-      where: { id: contract.id },
+      where: { id },
     });
 
-    // Audit log
-    await prisma.auditLog.create({
-      data: {
-        userId: user.userId,
-        action: 'DELETE_CONTRACT',
-        details: `Deleted contract '${contract.title}'. ID: ${contract.id}`,
-      },
-    });
-
-    return NextResponse.json({ success: true, message: 'Contract deleted' });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Delete contract error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

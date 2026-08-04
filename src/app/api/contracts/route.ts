@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getAuthenticatedUser, authResponseError } from '@/lib/api-auth';
+import { getAuthenticatedUserAsync } from '@/lib/api-auth';
 import fs from 'fs';
 import path from 'path';
 import { parsePdf, parseDocx, chunkText } from '@/lib/ai/parser';
 import { getEmbedding } from '@/lib/ai/embedding';
 import { storeChunks } from '@/lib/ai/vectorStore';
+import { runFullContractPipeline } from '@/services/contract-pipeline';
 const UPLOAD_DIR = process.env.UPLOAD_PATH || 'd:/Nidhi/LegalQA/uploads';
 
 // Ensure upload directory exists
@@ -15,8 +16,7 @@ if (!fs.existsSync(UPLOAD_DIR)) {
 
 // GET: List contracts for organization
 export async function GET(req: NextRequest) {
-  const user = getAuthenticatedUser(req);
-  if (!user) return authResponseError();
+  const user = await getAuthenticatedUserAsync(req);
 
   try {
     const contracts = await prisma.contract.findMany({
@@ -38,8 +38,7 @@ export async function GET(req: NextRequest) {
 
 // POST: Upload and process contract
 export async function POST(req: NextRequest) {
-  const user = getAuthenticatedUser(req);
-  if (!user) return authResponseError();
+  const user = await getAuthenticatedUserAsync(req);
 
   try {
     const formData = await req.formData();
@@ -72,6 +71,9 @@ export async function POST(req: NextRequest) {
       rawText = buffer.toString('utf8');
     }
 
+    console.log(`[Upload API] Extracted text length for "${title}": ${rawText.length} characters`);
+    console.log(`[Upload API] First 1000 chars:\n${rawText.slice(0, 1000)}`);
+
     // 3. Create Contract Record in database
     const contract = await prisma.contract.create({
       data: {
@@ -81,6 +83,11 @@ export async function POST(req: NextRequest) {
         status: 'PENDING_REVIEW',
         organizationId: user.organizationId,
         userId: user.userId,
+        metadata: {
+          content: rawText,
+          size: file.size,
+          extractedLength: rawText.length,
+        },
       },
     });
 
@@ -110,6 +117,9 @@ export async function POST(req: NextRequest) {
       // Save chunks to DB
       await storeChunks(contract.id, chunksWithEmbeddings);
     }
+
+    // Trigger full AI pipeline
+    runFullContractPipeline(contract.id).catch(err => console.error('Upload pipeline error:', err));
 
     return NextResponse.json({ contract });
   } catch (error) {

@@ -24,38 +24,24 @@ function startDatabase() {
   }
 
   console.log(`[Database Control] Starting local PostgreSQL on port ${PORT}...`);
+  const PG_CTL = 'D:/Nidhi/LegalQA/pg_bin/pgsql/bin/pg_ctl.exe';
   
-  if (!fs.existsSync(PG_BIN)) {
-    console.error(`[Database Control] Error: PostgreSQL binary not found at ${PG_BIN}`);
+  if (!fs.existsSync(PG_CTL)) {
+    console.error(`[Database Control] Error: pg_ctl binary not found at ${PG_CTL}`);
     process.exit(1);
   }
 
-  // Ensure log directory exists
   if (!fs.existsSync(PG_DATA)) {
     console.error(`[Database Control] Error: Data directory not found at ${PG_DATA}`);
     process.exit(1);
   }
 
-  // Open log file stream
-  const out = fs.openSync(LOG_FILE, 'a');
-  const err = fs.openSync(LOG_FILE, 'a');
-
-  // Spawn postgres.exe as a detached background process
-  const child = spawn(PG_BIN, ['-D', PG_DATA, '-p', PORT], {
-    detached: true,
-    stdio: ['ignore', out, err]
-  });
-
-  child.unref();
-  
-  // Wait a moment and check if it successfully bound to the port
-  setTimeout(() => {
-    if (isPostgresRunning()) {
-      console.log(`[Database Control] PostgreSQL started successfully on port ${PORT}.`);
-    } else {
-      console.error(`[Database Control] Error: Failed to start PostgreSQL. Check logs at ${LOG_FILE}`);
-    }
-  }, 2000);
+  try {
+    execSync(`"${PG_CTL}" -D "${PG_DATA}" -l "${LOG_FILE}" -o "-p ${PORT}" start`, { stdio: 'ignore' });
+    console.log(`[Database Control] PostgreSQL started successfully on port ${PORT}.`);
+  } catch (err) {
+    console.error(`[Database Control] Error starting PostgreSQL:`, err.message);
+  }
 }
 
 function stopDatabase() {
